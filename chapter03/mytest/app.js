@@ -1,12 +1,12 @@
-import { setupWebGL, pointsToBuffer } from 'GLHelper';
-import { vec2 } from 'gl-matrix';
+import { setupWebGL, pointsToBuffer } from "GLHelper";
+import { vec2 } from "gl-matrix";
 
-import vertexShader from './shader.vert';
-import fragmentShader from './shader.frag';
+import vertexShader from "./shader.vert";
+import fragmentShader from "./shader.frag";
 
 const verts = [vec2(0, 1), vec2(1, 0), vec2(-1, 0), vec2(0, -1)];
 
-const canvas = document.getElementById('gl-canvas');
+const canvas = document.getElementById("gl-canvas");
 const gl = setupWebGL(canvas);
 
 gl.viewport(0, 0, canvas.width, canvas.height);
@@ -31,10 +31,17 @@ const buffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 gl.bufferData(gl.ARRAY_BUFFER, pointsToBuffer(verts), gl.STATIC_DRAW);
 
-const vPosition = gl.getAttribLocation(program, 'vPosition');
+const vPosition = gl.getAttribLocation(program, "vPosition");
 gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
 gl.enableVertexAttribArray(vPosition);
 
+let theta = 0.0;
+const thetaLoc = gl.getUniformLocation(program, "theta");
+gl.uniform1f(thetaLoc, theta);
 
-gl.clear(gl.COLOR_BUFFER_BIT);
-gl.drawArrays(gl.TRIANGLES_STRIP, 0, 4);
+// setInterval(() => {
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  // theta = theta + 0.1;
+  gl.uniform1f(thetaLoc, theta);
+  gl.drawArrays(gl.TRIANGLES_STRIP, 0, 4);
+// },100);
