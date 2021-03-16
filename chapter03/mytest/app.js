@@ -35,6 +35,5 @@ const vPosition = gl.getAttribLocation(program, 'vPosition');
 gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
 gl.enableVertexAttribArray(vPosition);
 
-
 gl.clear(gl.COLOR_BUFFER_BIT);
 gl.drawArrays(gl.TRIANGLES_STRIP, 0, 4);
