@@ -53,7 +53,7 @@ const colorCube = () => {
 colorCube();
 
 const image = new Image();
-image.src = '/chapter06/shadedCube/img/uv.png';// 设置图片路径
+image.src = '/chapter06/shadedCube/uv.png';// 设置图片路径
 console.log(image);
 image.onload = texture;// 图片加载成功后执行texture函数
 
