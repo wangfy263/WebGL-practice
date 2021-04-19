@@ -40,7 +40,7 @@ export function setupWebGL(canvas, opt_attribs) {
 
 function initWebGL(id, opt_attribs) {
   const canvas = document.getElementById(id);
-  const names = ["webgl", "experimental-webgl", "webkit-3d", "moz-webgl"];
+  const names = ['webgl', 'experimental-webgl', 'webkit-3d', 'moz-webgl'];
   let context = null;
   for(let ii = 0; ii < names.length; ++ii) {
     try {
@@ -52,6 +52,7 @@ function initWebGL(id, opt_attribs) {
       break;
     }
   }
+  context.viewport(0, 0, canvas.width, canvas.height);
   return context;
 }
 
@@ -86,6 +87,7 @@ export function createProgram(gl, vertexShader, fragmentShader) {
   gl.attachShader(program, vertShdr);
   gl.attachShader(program, fragShdr);
   gl.linkProgram(program);
+  gl.useProgram(program);
 
   if(!gl.getProgramParameter(program, gl.LINK_STATUS)) {
     const msg = `Shader program failed to link.  The error log is:${gl.getProgramInfoLog(

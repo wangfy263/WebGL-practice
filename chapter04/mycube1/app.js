@@ -45,7 +45,7 @@ const indices = [
   0,1,5
 ];
 
-const canvas = document.getElementById('gl-canvas');
+const canvas = document.getElementById();
 const gl = setupWebGL(canvas);
 gl.viewport(0, 0, canvas.width, canvas.height);
 gl.clearColor(1.0, 1.0, 1.0, 1.0);

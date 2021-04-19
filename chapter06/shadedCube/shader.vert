@@ -2,6 +2,7 @@ attribute vec4 vPosition;
 attribute vec4 vColor;
 varying vec4 fColor;
 uniform vec3 theta;
+uniform mat4 tx;
 
 void main()
 {
@@ -24,7 +25,12 @@ void main()
                  0.0, 0.0, 1.0, 0.0,
                  0.0, 0.0, 0.0, 1.0);
   
-  gl_Position = rz * ry * rx * vPosition;
+  mat4 sm = mat4(0.5, 0.0, 0.0, 0.0,
+                0.0, 0.5, 0.0, 0.0,
+                0.0, 0.0, 0.5, 0.0,
+                0.0, 0.0, 0.0, 1.0);
+  
+  gl_Position = tx * rz * ry * rx * sm * vPosition;
   fColor = vColor;
   // gl_Position = 0.5 * vPosition;
   gl_PointSize = 1.0;
