@@ -20,27 +20,27 @@ module.exports = function (env = {}) {
   function makeEntry(chapter) {
     const root = path.resolve(__dirname, chapter);
     const pa = fs.readdirSync(root);
-    pa.forEach((el) => {
+    pa.forEach(el => {
       const info = fs.statSync(path.resolve(root, el));
-      if(info.isDirectory()) {
+      if (info.isDirectory()) {
         const entryPath = path.resolve(root, el, 'app.js');
         const isEntry = fs.existsSync(entryPath);
-        if(isEntry) {
+        if (isEntry) {
           entry[el] = entryPath;
         }
       }
     });
   }
 
-  for(let i = 1; i < 12; i++) {
+  for (let i = 1; i < 12; i++) {
     makeEntry(`chapter${`0${i}`.slice(-2)}`);
   }
 
   makeEntry('glsl');
   makeEntry('misc');
 
-  if(env.production) {
-    Object.keys(entry).forEach((key) => {
+  if (env.production) {
+    Object.keys(entry).forEach(key => {
       plugins.push(
         new HtmlWebpackPlugin({
           template: entry[key].replace(/app\.js$/, 'index.html'),
@@ -52,9 +52,9 @@ module.exports = function (env = {}) {
     });
   } else {
     plugins.push(
-      new OpenBrowserPlugin({url: 'http://localhost:3000'}),
+      new OpenBrowserPlugin({ url: 'http://localhost:3000' }),
       new webpack.HotModuleReplacementPlugin(),
-      new webpack.SourceMapDevToolPlugin({}),
+      new webpack.SourceMapDevToolPlugin({})
     );
   }
 
@@ -75,7 +75,7 @@ module.exports = function (env = {}) {
           exclude: /node_modules\/.*/,
           use: {
             loader: 'babel-loader',
-            options: {babelrc: true},
+            options: { babelrc: true },
           },
         },
         {
@@ -88,6 +88,18 @@ module.exports = function (env = {}) {
             loader: 'glsl-shader-loader',
             options: {},
           },
+        },
+        {
+          test: /\.(png|jpg|gif|jpeg)$/,
+          use: [
+            {
+              loader: 'url-loader',
+              options: {
+                limit: 1000,
+                name: '[name].[hash:8].[ext]',
+              },
+            },
+          ],
         },
       ],
 

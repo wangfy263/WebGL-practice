@@ -2,8 +2,8 @@ import { pointsToBuffer } from "GLHelper";
 import { vec4, mat4 } from "gl-matrix";
 import { setupWebGL, createProgram } from "./util";
 
-import vertexShader from "./shader.vert";
-import fragmentShader from "./shader.frag";
+import vertexShader from './shader.vert';
+import fragmentShader from './shader.frag';
 
 const numVertices = 36;
 const points = [];
@@ -48,9 +48,10 @@ const vertexColors = [
 
 function quad(a, b, c, d) {
   const indexs = [a, b, c, a, c, d];
-  for(let i = 0; i < indexs.length; i++) {
+  for (let i = 0; i < indexs.length; i++) {
     points.push(vertices[indexs[i]]);
-    colors.push(vertexColors[indexs[i]]);
+    colors.push(vertexColors[a]);
+    // colors.push(vertexColors[a]);
   }
 }
 
