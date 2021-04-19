@@ -35,7 +35,7 @@ void main()
                 0.0, 0.0, 0.5, 0.0,
                 0.0, 0.0, 0.0, 1.0);
   
-  gl_Position = tx * rz * ry * rx * sm * vPosition;
+  gl_Position = sc * tx * rz * ry * rx * vPosition;
   fColor = vColor;
   gl_PointSize = 1.0;
 }

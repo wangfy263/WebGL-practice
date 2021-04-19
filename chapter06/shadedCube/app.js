@@ -50,7 +50,7 @@ function quad(a, b, c, d) {
   const indexs = [a, b, c, a, c, d];
   for (let i = 0; i < indexs.length; i++) {
     points.push(vertices[indexs[i]]);
-    colors.push(vertexColors[a]);
+    colors.push(vertexColors[c]);
     // colors.push(vertexColors[a]);
   }
 }
