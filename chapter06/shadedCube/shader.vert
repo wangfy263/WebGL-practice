@@ -3,6 +3,7 @@ attribute vec4 vColor;
 varying vec4 fColor;
 uniform vec3 theta;
 uniform mat4 tx;
+uniform mat4 viewMatrix;
 
 void main()
 {
@@ -35,7 +36,7 @@ void main()
                 0.0, 0.0, 0.5, 0.0,
                 0.0, 0.0, 0.0, 1.0);
   
-  gl_Position = tx * rz * ry * rx * sm * vPosition;
+  gl_Position = tx * rz * ry * rx * sm * viewMatrix * vPosition;
   fColor = vColor;
   gl_PointSize = 1.0;
 }

@@ -1,5 +1,5 @@
 import { pointsToBuffer } from "GLHelper";
-import { vec4, mat4 } from "gl-matrix";
+import { vec3, vec4, mat4 } from 'gl-matrix';
 import { setupWebGL, createProgram } from "./util";
 
 import vertexShader from './shader.vert';
@@ -8,9 +8,10 @@ import fragmentShader from './shader.frag';
 const numVertices = 36;
 const points = [];
 const colors = [];
+const colors1 = [];
 
-const theta = [0, 30, 60];
-// const theta = [0, 0, 0];
+// const theta = [0, 30, 60];
+const theta = [0, 0, 0];
 
 const vertices = [
   vec4(-0.5, -0.5, 0.5, 1.0),
@@ -50,7 +51,7 @@ function quad(a, b, c, d) {
   const indexs = [a, b, c, a, c, d];
   for (let i = 0; i < indexs.length; i++) {
     points.push(vertices[indexs[i]]);
-    colors.push(vertexColors[a]);
+    colors.push(vertexColors[indexs[i]]);
     // colors.push(vertexColors[a]);
   }
 }
@@ -88,21 +89,30 @@ gl.enableVertexAttribArray(vColor);
 
 const thetaLoc = gl.getUniformLocation(program, 'theta');
 const txLoc = gl.getUniformLocation(program, 'tx');
+const viewMatrix = gl.getUniformLocation(program, 'viewMatrix');
 
 const tx1 = mat4(1, 0, 0, 0,
                 0, 1, 0, 0,
                 0, 0, 1, 0,
-                -0.5, 0, 0, 1);
+                0, -0.5, -0.5, 1);
 
 const tx2 = mat4(1, 0, 0, 0,
                 0, 1, 0, 0,
                 0, 0, 1, 0,
-                0.5, 0, 0, 1);
+                0, 0.5, 1, 1);
+
+// 视图矩阵
+const eye = vec3(2, 2, 2);
+const center = vec3(0, 0, 0);
+const up = vec3(0, 1, 0);
+const view = mat4.lookAt(eye, center, up);
+console.log(view);
 
 function render() {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  theta[0] += 2.0;
+  // theta[0] += 2.0;
   gl.uniform3fv(thetaLoc, theta);
+  gl.uniformMatrix4fv(viewMatrix, false, view);
   gl.uniformMatrix4fv(txLoc, false, tx1);
   gl.drawArrays(gl.TRIANGLES, 0, numVertices);
 
