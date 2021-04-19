@@ -38,8 +38,7 @@ export function setupWebGL(canvas, opt_attribs) {
   return context;
 }
 
-function initWebGL(id, opt_attribs) {
-  const canvas = document.getElementById(id);
+function initWebGL(canvas, opt_attribs) {
   const names = ['webgl', 'experimental-webgl', 'webkit-3d', 'moz-webgl'];
   let context = null;
   for(let ii = 0; ii < names.length; ++ii) {

@@ -1,5 +1,5 @@
 import { pointsToBuffer } from "GLHelper";
-import { vec4, mat4 } from "gl-matrix";
+import { vec3, vec4, mat4 } from 'gl-matrix';
 import { setupWebGL, createProgram } from "./util";
 
 import vertexShader from './shader.vert';
@@ -50,8 +50,8 @@ function quad(a, b, c, d) {
   const indexs = [a, b, c, a, c, d];
   for (let i = 0; i < indexs.length; i++) {
     points.push(vertices[indexs[i]]);
+    // colors.push(vertexColors[indexs[i]]);
     colors.push(vertexColors[c]);
-    // colors.push(vertexColors[a]);
   }
 }
 
@@ -66,7 +66,8 @@ const colorCube = () => {
 
 colorCube();
 
-const gl = setupWebGL('gl-canvas');
+const canvas = document.getElementById('gl-canvas');
+const gl = setupWebGL(canvas);
 gl.clearColor(1.0, 1.0, 1.0, 1.0);
 gl.enable(gl.DEPTH_TEST);
 
@@ -88,6 +89,9 @@ gl.enableVertexAttribArray(vColor);
 
 const thetaLoc = gl.getUniformLocation(program, 'theta');
 const txLoc = gl.getUniformLocation(program, 'tx');
+const viewMatrix = gl.getUniformLocation(program, 'viewMatrix');
+const perspectMatrix = gl.getUniformLocation(program, 'perspectMatrix');
+const orthoMatrix = gl.getUniformLocation(program, 'orthoMatrix');
 
 const tx1 = mat4(1, 0, 0, 0,
                 0, 1, 0, 0,
@@ -99,14 +103,30 @@ const tx2 = mat4(1, 0, 0, 0,
                 0, 0, 1, 0,
                 0.5, 0, 0, 1);
 
+// 视图矩阵
+const eye = vec3(0, 0, 2);
+const center = vec3(0, 0, 0);
+const up = vec3(0, 1, 0);
+const view = mat4.lookAt(eye, center, up);
+console.log(view);
+
+const aspect = canvas.width / canvas.height;
+const perspect = mat4.perspective(45, aspect, 0.3, 5);
+const ortho = mat4.ortho(-3, 3, 3, -3, 0.3, 5);
+
 function render() {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   theta[0] += 2.0;
   gl.uniform3fv(thetaLoc, theta);
+  gl.uniformMatrix4fv(viewMatrix, false, view);
+  // gl.uniformMatrix4fv(perspectMatrix, false, perspect);
+  gl.uniformMatrix4fv(orthoMatrix, false, ortho);
   gl.uniformMatrix4fv(txLoc, false, tx1);
   gl.drawArrays(gl.TRIANGLES, 0, numVertices);
 
-  gl.uniform3fv(thetaLoc, theta);
+  // gl.uniform3fv(thetaLoc, theta);
+  // gl.uniformMatrix4fv(viewMatrix, false, view);
+  // gl.uniformMatrix4fv(perspectMatrix, false, perspect);
   gl.uniformMatrix4fv(txLoc, false, tx2);
   gl.drawArrays(gl.TRIANGLES, 0, numVertices);
   requestAnimationFrame(render);
