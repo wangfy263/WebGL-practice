@@ -1,13 +1,14 @@
 import { pointsToBuffer } from "GLHelper";
 import { vec3, vec4, mat4 } from 'gl-matrix';
-import { setupWebGL, createProgram } from "./util";
+import { setupWebGL, createProgram, mult } from "./util";
 
 import vertexShader from './shader.vert';
 import fragmentShader from './shader.frag';
 
 const numVertices = 36;
 const points = [];
-const colors = [];
+// const colors = [];
+const normalsArray = [];
 
 const theta = [0, 30, 60];
 // const theta = [0, 0, 0];
@@ -23,22 +24,23 @@ const vertices = [
   vec4(0.5, -0.5, -0.5, 1.0),
 ];
 
-const vertexColors = [
-  vec4(1, 0, 0, 1),
-  vec4(1, 1, 0, 1),
-  vec4(1, 1, 1, 1),
-  vec4(0, 0, 1, 1),
-  vec4(0, 1, 1, 1),
-  vec4(1, 0, 1, 1),
-  vec4(0, 1, 0, 1),
-  vec4(0, 0, 0, 1),
-];
+// const vertexColors = [
+//   vec4(1, 0, 0, 1),
+//   vec4(1, 1, 0, 1),
+//   vec4(1, 1, 1, 1),
+//   vec4(0, 0, 1, 1),
+//   vec4(0, 1, 1, 1),
+//   vec4(1, 0, 1, 1),
+//   vec4(0, 1, 0, 1),
+//   vec4(0, 0, 0, 1),
+// ];
 
 // 定义光源
 const lightPosition = vec4(1.0, 1.0, 1.0, 0.0); // 点光源位置，第四个分量为0，表示远距离光源
-const lightAmbient = vec4(0.2, 0.2, 0.2, 1.0); // 环境光
-const lightDiffuse = vec4(1.0, 1.0, 1.0, 1.0); // 漫反射
-const lightSpecular = vec4(1.0, 1.0, 1.0, 1.0); // 镜面反射
+
+const lightAmbient = vec4(0.2, 0.2, 0.2, 1.0); // 环境光强度
+const lightDiffuse = vec4(1.0, 1.0, 1.0, 1.0); // 漫反射强度
+const lightSpecular = vec4(1.0, 1.0, 1.0, 1.0); // 镜面反射强度
 
 // 材质反射系数
 const materialAmbient = vec4(1.0, 0.0, 1.0, 1.0); // 环境光反射系数
@@ -48,10 +50,18 @@ const materialShininess = 100.0; // 镜面反射高光系数
 
 function quad(a, b, c, d) {
   const indexs = [a, b, c, a, c, d];
+  const t1 = subtract(vertices[b], vertices[a]);
+  const t2 = subtract(vertices[c], vertices[b]);
+  let normal = cross(t1, t2);
+  normal = vec3(normal);
   for (let i = 0; i < indexs.length; i++) {
+    var t1 = subtract(vertices[b], vertices[a]);
+    var t2 = subtract(vertices[c], vertices[b]);
+    var normal = cross(t1, t2);
+    var normal = vec3(normal);
     points.push(vertices[indexs[i]]);
     // colors.push(vertexColors[indexs[i]]);
-    colors.push(vertexColors[c]);
+    // colors.push(vertexColors[c]);
   }
 }
 

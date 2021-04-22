@@ -1,6 +1,6 @@
 import { pointsToBuffer } from "GLHelper";
 import { vec3, vec4, mat4 } from 'gl-matrix';
-import { setupWebGL, createProgram } from "./util";
+import { setupWebGL, createProgram, mult } from "./util";
 
 import vertexShader from './shader.vert';
 import fragmentShader from './shader.frag';
@@ -23,16 +23,16 @@ const vertices = [
   vec4(0.5, -0.5, -0.5, 1.0),
 ];
 
-const vertexColors = [
-  vec4(1, 0, 0, 1),
-  vec4(1, 1, 0, 1),
-  vec4(1, 1, 1, 1),
-  vec4(0, 0, 1, 1),
-  vec4(0, 1, 1, 1),
-  vec4(1, 0, 1, 1),
-  vec4(0, 1, 0, 1),
-  vec4(0, 0, 0, 1),
-];
+// const vertexColors = [
+//   vec4(1, 0, 0, 1),
+//   vec4(1, 1, 0, 1),
+//   vec4(1, 1, 1, 1),
+//   vec4(0, 0, 1, 1),
+//   vec4(0, 1, 1, 1),
+//   vec4(1, 0, 1, 1),
+//   vec4(0, 1, 0, 1),
+//   vec4(0, 0, 0, 1),
+// ];
 
 // 定义光源
 const lightPosition = vec4(1.0, 1.0, 1.0, 0.0); // 点光源位置，第四个分量为0，表示远距离光源
