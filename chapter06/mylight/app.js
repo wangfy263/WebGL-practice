@@ -1,6 +1,6 @@
-import { pointsToBuffer } from "GLHelper";
+import { pointsToBuffer } from 'GLHelper';
 import { vec3, vec4, mat4 } from 'gl-matrix';
-import { setupWebGL, createProgram, mult } from "./util";
+import { setupWebGL, createProgram, radians } from './util';
 
 import vertexShader from './shader.vert';
 import fragmentShader from './shader.frag';
@@ -50,16 +50,16 @@ const materialShininess = 100.0; // 镜面反射高光系数
 
 function quad(a, b, c, d) {
   const indexs = [a, b, c, a, c, d];
-  const t1 = subtract(vertices[b], vertices[a]);
-  const t2 = subtract(vertices[c], vertices[b]);
-  let normal = cross(t1, t2);
-  normal = vec3(normal);
-  for (let i = 0; i < indexs.length; i++) {
-    var t1 = subtract(vertices[b], vertices[a]);
-    var t2 = subtract(vertices[c], vertices[b]);
-    var normal = cross(t1, t2);
-    var normal = vec3(normal);
+  const t1 = vec4.subtract(vertices[b], vertices[a]);
+  const t2 = vec4.subtract(vertices[c], vertices[b]);
+  console.log(t1);
+  console.log(t2);
+  let normal = vec3.cross(vec3(t1), vec3(t2));
+  console.log(normal);
+  normal = vec4(normal, 1.0);
+  for(let i = 0; i < indexs.length; i++) {
     points.push(vertices[indexs[i]]);
+    normalsArray.push(normal);
     // colors.push(vertexColors[indexs[i]]);
     // colors.push(vertexColors[c]);
   }
@@ -90,55 +90,58 @@ const vPosition = gl.getAttribLocation(program, 'vPosition');
 gl.vertexAttribPointer(vPosition, 4, gl.FLOAT, false, 0, 0);
 gl.enableVertexAttribArray(vPosition);
 
-const cBuffer = gl.createBuffer();
-gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
-gl.bufferData(gl.ARRAY_BUFFER, pointsToBuffer(colors), gl.STATIC_DRAW);
-const vColor = gl.getAttribLocation(program, 'vColor');
-gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
-gl.enableVertexAttribArray(vColor);
+const nBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, nBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, pointsToBuffer(normalsArray), gl.STATIC_DRAW);
+const vNormal = gl.getAttribLocation(program, 'vNormal');
+gl.vertexAttribPointer(vNormal, 3, gl.FLOAT, false, 0, 0);
+gl.enableVertexAttribArray(vNormal);
 
 const thetaLoc = gl.getUniformLocation(program, 'theta');
-const txLoc = gl.getUniformLocation(program, 'tx');
-const viewMatrix = gl.getUniformLocation(program, 'viewMatrix');
-const perspectMatrix = gl.getUniformLocation(program, 'perspectMatrix');
-const orthoMatrix = gl.getUniformLocation(program, 'orthoMatrix');
+const modelViewMatrix = gl.getUniformLocation(program, 'modelViewMatrix');
+const projectionMatrix = gl.getUniformLocation(program, 'projectionMatrix');
 
-const tx1 = mat4(1, 0, 0, 0,
-                0, 1, 0, 0,
-                0, 0, 1, 0,
-                -0.5, 0, 0, 1);
+const ambientProduct = gl.getUniformLocation(program, 'ambientProduct');
+const diffuseProduct = gl.getUniformLocation(program, 'diffuseProduct');
+const specularProduct = gl.getUniformLocation(program, 'specularProduct');
 
-const tx2 = mat4(1, 0, 0, 0,
-                0, 1, 0, 0,
-                0, 0, 1, 0,
-                0.5, 0, 0, 1);
+const lightPos= gl.getUniformLocation(program, 'lightPosition');
+const ambientProd = vec4.multiply(lightAmbient, materialAmbient);
+const diffuseProd = vec4.multiply(lightDiffuse, materialDiffuse);
+const specularProd = vec4.multiply(lightSpecular, materialSpecular);
+const shininess = gl.getUniformLocation(program, 'shininess');
 
-// 视图矩阵
-const eye = vec3(0, 0, 2);
-const center = vec3(0, 0, 0);
-const up = vec3(0, 1, 0);
-const view = mat4.lookAt(eye, center, up);
-console.log(view);
+const angles = radians( theta );
+  vec3 c = cos(angles);
+  vec3 s = sin(angles);
 
-const aspect = canvas.width / canvas.height;
-const perspect = mat4.perspective(45, aspect, 0.3, 5); // 透视投影
-const ortho = mat4.ortho(-3, 3, 3, -3, 0.3, 5); // 正交投影
+  mat4 sc = mat4(0.5, 0.0, 0.0, 0.0,
+                 0.0, 0.5, 0.0, 0.0,
+                 0.0, 0.0, 0.5, 0.0,
+                 0.0, 0.0, 0.0, 1.0);
+
+  mat4 rx = mat4(1.0, 0.0, 0.0, 0.0,
+                 0.0, c.x, s.x, 0.0,
+                 0.0, -s.x, c.x, 0.0,
+                 0.0, 0.0, 0.0, 1.0);
+  
+  mat4 ry = mat4(c.y, 0.0, s.y, 0.0,
+                 0.0, 1.0, 0.0, 0.0,
+                 s.y, 0.0, c.y, 0.0,
+                 0.0, 0.0, 0.0, 1.0);
+
+  mat4 rz = mat4(c.z, s.z, 0.0, 0.0,
+                 -s.z, c.z, 0.0, 0.0,
+                 0.0, 0.0, 1.0, 0.0,
+                 0.0, 0.0, 0.0, 1.0);
+  
+  mat4 sm = mat4(0.5, 0.0, 0.0, 0.0,
+                0.0, 0.5, 0.0, 0.0,
+                0.0, 0.0, 0.5, 0.0,
+                0.0, 0.0, 0.0, 1.0);
 
 function render() {
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  theta[0] += 2.0;
-  gl.uniform3fv(thetaLoc, theta);
-  gl.uniformMatrix4fv(viewMatrix, false, view);
-  // gl.uniformMatrix4fv(perspectMatrix, false, perspect);
-  gl.uniformMatrix4fv(orthoMatrix, false, ortho);
-  gl.uniformMatrix4fv(txLoc, false, tx1);
-  gl.drawArrays(gl.TRIANGLES, 0, numVertices);
 
-  // gl.uniform3fv(thetaLoc, theta);
-  // gl.uniformMatrix4fv(viewMatrix, false, view);
-  // gl.uniformMatrix4fv(perspectMatrix, false, perspect);
-  gl.uniformMatrix4fv(txLoc, false, tx2);
-  gl.drawArrays(gl.TRIANGLES, 0, numVertices);
+
   requestAnimationFrame(render);
 }
-render();

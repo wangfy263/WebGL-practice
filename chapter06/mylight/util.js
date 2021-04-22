@@ -99,50 +99,7 @@ export function createProgram(gl, vertexShader, fragmentShader) {
   return program;
 }
 
-export function mult(u, v) {
-  const result = [];
-
-  if(u.matrix && v.matrix) {
-    if(u.length !== v.length) {
-      throw "mult(): trying to add matrices of different dimensions";
-    }
-
-    for(let i = 0; i < u.length; ++i) {
-      if(u[i].length !==v[i].length) {
-        throw "mult(): trying to add matrices of different dimensions";
-      }
-    }
-
-    for(let i = 0; i < u.length; ++i) {
-      result.push([]);
-
-      for(let j = 0; j < v.length; ++j) {
-        let sum = 0.0;
-        for(let k = 0; k < u.length; ++k) {
-          sum += u[i][k] * v[k][j];
-        }
-        result[i].push(sum);
-      }
-    }
-    result.matrix = true;
-    return result;
-  }
-
-  if(u.matrix && u.length === v.length) {
-    for(let i = 0; i < v.length; i++) {
-      let sum = 0.0;
-      for(let j = 0; j < v.length; j++) {
-        sum += u[i][j] * v[j];
-      }
-      result.push(sum);
-    }
-  } else {
-    if(u.length !== v.length) {
-      throw "mult(): vectors are not the same dimension";
-    }
-    for(let i = 0; i < u.length; ++i) {
-      result.push(u[i] * v[i]);
-    }
-  }
-  return result;
+// (2*Math.PI / 360) * 6 * times;
+export function radians(theta) {
+  // return theta.map(item => )
 }

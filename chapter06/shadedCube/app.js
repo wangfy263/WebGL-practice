@@ -112,7 +112,6 @@ console.log(view);
 
 const aspect = canvas.width / canvas.height;
 const perspect = mat4.perspective(45, aspect, 0.3, 5); // 透视投影
-const ortho = mat4.ortho(-3, 3, 3, -3, 0.3, 5); // 正交投影
 
 function render() {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -120,7 +119,7 @@ function render() {
   gl.uniform3fv(thetaLoc, theta);
   gl.uniformMatrix4fv(viewMatrix, false, view);
   // gl.uniformMatrix4fv(perspectMatrix, false, perspect);
-  gl.uniformMatrix4fv(orthoMatrix, false, ortho);
+  gl.uniformMatrix4fv(orthoMatrix, false, perspect);
   gl.uniformMatrix4fv(txLoc, false, tx1);
   gl.drawArrays(gl.TRIANGLES, 0, numVertices);
 
