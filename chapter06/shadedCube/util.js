@@ -21,18 +21,18 @@ const OTHER_PROBLEM = `It doesn't appear your computer can support WebGL.<br/>
 export function setupWebGL(canvas, opt_attribs) {
   function showLink(str) {
     const container = canvas.parentNode;
-    if(container) {
+    if (container) {
       container.innerHTML = makeFailHTML(str);
     }
   }
 
-  if(!window.WebGLRenderingContext) {
+  if (!window.WebGLRenderingContext) {
     showLink(GET_A_WEBGL_BROWSER);
     return null;
   }
 
   const context = initWebGL(canvas, opt_attribs);
-  if(!context) {
+  if (!context) {
     showLink(OTHER_PROBLEM);
   }
   return context;
@@ -41,13 +41,13 @@ export function setupWebGL(canvas, opt_attribs) {
 function initWebGL(canvas, opt_attribs) {
   const names = ['webgl', 'experimental-webgl', 'webkit-3d', 'moz-webgl'];
   let context = null;
-  for(let ii = 0; ii < names.length; ++ii) {
+  for (let ii = 0; ii < names.length; ++ii) {
     try {
       context = canvas.getContext(names[ii], opt_attribs);
     } catch (e) {
       // no-empty
     }
-    if(context) {
+    if (context) {
       break;
     }
   }
@@ -61,10 +61,8 @@ export function createProgram(gl, vertexShader, fragmentShader) {
   gl.shaderSource(vertShdr, vertexShader);
   gl.compileShader(vertShdr);
 
-  if(!gl.getShaderParameter(vertShdr, gl.COMPILE_STATUS)) {
-    const msg = `Vertex shader failed to compile.  The error log is:${gl.getShaderInfoLog(
-      vertShdr
-    )}`;
+  if (!gl.getShaderParameter(vertShdr, gl.COMPILE_STATUS)) {
+    const msg = `Vertex shader failed to compile.  The error log is:${gl.getShaderInfoLog(vertShdr)}`;
     console.error(msg);
     return -1;
   }
@@ -73,10 +71,8 @@ export function createProgram(gl, vertexShader, fragmentShader) {
   gl.shaderSource(fragShdr, fragmentShader);
   gl.compileShader(fragShdr);
 
-  if(!gl.getShaderParameter(fragShdr, gl.COMPILE_STATUS)) {
-    const msg = `Fragment shader failed to compile.  The error log is:${gl.getShaderInfoLog(
-      fragShdr
-    )}`;
+  if (!gl.getShaderParameter(fragShdr, gl.COMPILE_STATUS)) {
+    const msg = `Fragment shader failed to compile.  The error log is:${gl.getShaderInfoLog(fragShdr)}`;
     console.error(msg);
     return -1;
   }
@@ -88,13 +84,24 @@ export function createProgram(gl, vertexShader, fragmentShader) {
   gl.linkProgram(program);
   gl.useProgram(program);
 
-  if(!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    const msg = `Shader program failed to link.  The error log is:${gl.getProgramInfoLog(
-      program
-    )}`;
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    const msg = `Shader program failed to link.  The error log is:${gl.getProgramInfoLog(program)}`;
     console.error(msg);
     return -1;
   }
 
   return program;
+}
+
+export function mult(u, v) {
+  const result = [];
+  if(u.length !== v.length) {
+    throw new Error('mult(): vectors are not the same dimension');
+  }
+
+  for(let i = 0; i < u.length; ++i) {
+    result.push(u[i] * v[i]);
+  }
+
+  return result;
 }
